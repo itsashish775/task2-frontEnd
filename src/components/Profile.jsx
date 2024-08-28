@@ -6,11 +6,12 @@ import ProfileImage from "./ProfileImage"
 import { uploadImage } from "../API/uploadImage"
 import { updateProfileImage } from "../API/updateProfilePic"
 import AddVideoModal from "./addVideoModel"
-
+import thumbnail from "./../asset/image/video.png"
 const Profile = () => {
     let userId = localStorage.getItem("userId")
     const [loading, setLoading] = useState(false)
     const [count, setCount] = useState(0)
+    const [videos, setVideos] = useState([])
 
     const [data, setData] = useState(null)
     const [open, setOpen] = useState(false)
@@ -23,7 +24,8 @@ const Profile = () => {
             console.log(res);
             if (res.status == 200) {
                 setLoading(true)
-                setData(res.data)
+                setData(res?.data)
+                setVideos(res?.videos)
                 setProfileImage(res?.data?.profileImage)
             }
         } catch (error) {
@@ -44,8 +46,15 @@ const Profile = () => {
     };
 
     useEffect(() => {
-        getProfileDetails()
+        if (userId) {
+            getProfileDetails()
+        }
     }, [count])
+    if (!userId) {
+        return (
+            <div>Loading... Login first</div>
+        )
+    }
     return (
         <>
             {
@@ -99,25 +108,24 @@ const Profile = () => {
                         <h2 style={{ textAlign: "center", color: "#333", marginBottom: "30px" }}>Video Listing</h2>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
                             {/* Video Item 1 */}
-                            <div style={{ border: "1px solid #ccc", borderRadius: "8px", overflow: "hidden", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", backgroundColor: "#fff", display: "flex" }}>
-                                <div style={{ width: "200px", height: "150px" }}>
-                                    <img src="https://picsum.photos/200/300" alt="Video Thumbnail" style={{ width: "100%", objectFit: "cover" }} />
-                                </div>
-                                <div style={{ padding: "15px" }}>
-                                    <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>Video Title 2</h3>
-                                    <p style={{ color: "#777" }}>This is a brief description of the video content. It provides an overview of what the video is about.</p>
-                                </div>
-                            </div>
-                            {/* Video Item 2 */}
-                            <div style={{ border: "1px solid #ccc", borderRadius: "8px", overflow: "hidden", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", backgroundColor: "#fff", display: "flex" }}>
-                                <div style={{ width: "200px", height: "150px" }}>
-                                    <img src="https://picsum.photos/200/300" alt="Video Thumbnail" style={{ width: "100%", objectFit: "cover" }} />
-                                </div>
-                                <div style={{ padding: "15px" }}>
-                                    <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>Video Title 2</h3>
-                                    <p style={{ color: "#777" }}>This is a brief description of the video content. It provides an overview of what the video is about.</p>
-                                </div>
-                            </div>
+                            {videos && videos?.length > 0 ? videos?.map((n, i) => {
+                                return <>
+                                    <a href={n?.videoURL} target="_blank"
+                                        style={{ textDecoration: "none" }} key={i}>
+                                        <div style={{ border: "1px solid #ccc", borderRadius: "8px", overflow: "hidden", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", backgroundColor: "#fff", display: "flex", alignItems: "center" }}>
+                                            <div style={{ width: "200px", height: "200px" }}>
+                                                <img src={thumbnail} alt="Video Thumbnail" style={{ width: "100%", objectFit: "cover" }} />
+                                            </div>
+                                            <div style={{ padding: "15px" }}>
+                                                <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>{n?.title}</h3>
+                                                <p style={{ color: "#777" }}>{n?.description}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </>
+                            }) : <>No video Uploaded</>}
+
+
                             {/* Add more video items as needed */}
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 import Axios from "axios";
-const API_URL = "http://localhost:4000/api"
-// const API_URL = "https://task2-lkow.onrender.com/api"
+// const API_URL = "http://localhost:4000/api"
+const API_URL = "https://task2-lkow.onrender.com/api"
 
 function authRequestInterceptor(config) {
     if (config && config.headers) {
